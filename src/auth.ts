@@ -1,4 +1,3 @@
-import { z } from "zod";
 import express from "express";
 import { ENV } from "./config.js";
 import jwt from "jsonwebtoken";
@@ -8,11 +7,20 @@ import type mongoose from "mongoose";
 const app = express();
 app.use(express.json());
 
+interface JWTPayload {
+    id: string
+}
+
+interface AuthRequest extends express.Request {
+    user?: any,
+    admin?: any
+}
+
 export function createAuthMiddleware(
     Model: mongoose.Model<any>,
     role: string
 ) {
-    return async (req, res, next) => {
+    return async (req: AuthRequest, res: express.Response, next: express.NextFunction) => {
         const token = req.headers.authorization;
 
         if (!token) {
@@ -21,9 +29,9 @@ export function createAuthMiddleware(
             })
         }
 
-        let decodedDetails;
+        let decodedDetails: JWTPayload;
         try {
-            decodedDetails = jwt.verify(token, ENV.JWT_SECRET);
+            decodedDetails = jwt.verify(token, ENV.JWT_SECRET) as JWTPayload;
         } catch (err) {
             return res.status(401).json({
                 error: "Invaid or expired token."
@@ -45,7 +53,7 @@ export function createAuthMiddleware(
                 });
             }
 
-            req[role] = found;
+            req.user = found;
             next();
         } catch (err) {
             return res.status(500).json({
