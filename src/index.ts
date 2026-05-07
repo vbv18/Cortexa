@@ -1,41 +1,39 @@
-import { ENV } from "./config.js";
+import { ENV, connectToDB } from "./config.js";
 import { z } from "zod";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import express from "express";
 import mongoose from "mongoose";
 import { UserModel, TagModel, ContentModel, LinkModel } from "./db.js";
-
-
-async function connectToDB() {
-    try {
-        await mongoose.connect(ENV.MONGODB_URL);
-        console.log('MongoDB connected.');
-    }
-    catch (err) {
-        console.log('############ error ############');
-        console.log(err);
-    }
-}
-connectToDB();
+import { userAuthMiddleware } from "./auth.js";
 
 
 const app = express();
-
 app.use(express.json());
-
 app.use((req, res, next) => {
     console.log(`${req.method} - ${req.path} : ${new Date().toUTCString()}`);
     next();
 });
 
 
+async function startServer() {
+    try {
+        await mongoose.connect(ENV.MONGODB_URL);
+
+        app.listen(ENV.PORT, () => {
+            console.log(`Server running on port: ${ENV.PORT}`);
+        });
+
+    } catch (err) {
+        console.log(err);
+    }
+}
+
+
 const UserProfileScehma = z.object({
     username: z.string().min(3),
     password: z.string().min(4)
 })
-
-// type UserProfile = z.infer<typeof UserProfileScehma>;
 
 app.post("/api/v1/signup", async (req, res) => {
     const requiredBody = z.object({
@@ -47,7 +45,7 @@ app.post("/api/v1/signup", async (req, res) => {
 
     if (!result.success) {
         return res.status(411).json({
-            error: "Invalid Input"
+            error: "Invalid Input. " + result.error.format()
         });
     }
 
@@ -59,19 +57,74 @@ app.post("/api/v1/signup", async (req, res) => {
         await UserModel.create({
             username: username,
             email: email,
-            password: hashedPassword
+            password: hashedPassword,
+            role: "user"
         });
         return res.status(201).json({ message: "You are signed up." });
     } catch (err: any) {
         if (err.code === 11000) {
-            return res.status(400).json
+            return res.status(400).json({
+                error: "Username or email already exists."
+            })
         }
         return res.status(500).json({
-            error: "Something went wrong.";
+            error: "Something went wrong."
         });
     }
 });
 
-app.post("/signin", (req, res) => {
+app.post("/api/v1/signin", async (req, res) => {
+    const requiredBody = z.object({
+        username: z.string().min(1),
+        password: z.string().min(4)
+    })
 
+    const result = requiredBody.safeParse(req.body);
+
+    if (!result.success) {
+        return res.status(411).json({
+            error: "Invalid input. " + result.error.format()
+        })
+    }
+
+    let { username, password } = result.data;
+
+    let foundUser;
+    try {
+        foundUser = await UserModel.findOne({ username: username }).lean();
+    } catch (err) {
+        return res.status(500).json({ error: 'Something went wrong.' });
+    }
+
+    if (!foundUser) {
+        return res.status(401).json({ error: 'Invalid email or password.' });
+    }
+
+    let passwordMatch;
+    try {
+        passwordMatch = await bcrypt.compare(password, foundUser.password);
+    } catch (err) {
+        return res.status(500).json({ error: 'Something went wrong.' });
+    }
+
+    if (!passwordMatch) {
+        return res.status(401).json({ error: 'Invalid email or password.' });
+    }
+
+    const token = jwt.sign({
+        id: foundUser._id
+    }, ENV.JWT_SECRET, {
+        expiresIn: "1h"
+    });
+
+    return res.status(200).json({
+        token: token
+    });
 });
+
+
+
+
+
+
+startServer();
