@@ -1,4 +1,4 @@
-import { ENV, connectToDB } from "./config.js";
+import { ENV } from "./config.js";
 import { z } from "zod";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
@@ -10,7 +10,7 @@ import { userAuthMiddleware } from "./auth.js";
 
 const app = express();
 app.use(express.json());
-app.use((req, res, next) => {
+app.use((req: express.Request, res: express.Response, next: express.NextFunction) => {
     console.log(`${req.method} - ${req.path} : ${new Date().toUTCString()}`);
     next();
 });
@@ -30,12 +30,7 @@ async function startServer() {
 }
 
 
-const UserProfileScehma = z.object({
-    username: z.string().min(3),
-    password: z.string().min(4)
-})
-
-app.post("/api/v1/signup", async (req, res) => {
+app.post("/api/v1/signup", async (req: express.Request, res: express.Response) => {
     const requiredBody = z.object({
         username: z.string().min(3),
         email: z.string().email().transform(val => val.toLowerCase().trim()),
@@ -73,7 +68,7 @@ app.post("/api/v1/signup", async (req, res) => {
     }
 });
 
-app.post("/api/v1/signin", async (req, res) => {
+app.post("/api/v1/signin", async (req: express.Request, res: express.Response) => {
     const requiredBody = z.object({
         username: z.string().min(1),
         password: z.string().min(4)
@@ -122,6 +117,8 @@ app.post("/api/v1/signin", async (req, res) => {
     });
 });
 
+
+app.use(userAuthMiddleware);
 
 
 
