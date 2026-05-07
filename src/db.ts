@@ -5,7 +5,8 @@ const ObjectId = Schema.Types.ObjectId;
 const contentTypes = ["image", "audio", "video", "article"];
 
 const UserSchema = new Schema({
-    name: { type: String, required: true, unique: true },
+    username: { type: String, required: true, unique: true },
+    email: { type: String, required: true, unique: true },
     password: { type: String, required: true }
 }, { timestamps: true })
 
@@ -32,6 +33,6 @@ const LinkSchema = new Schema({
 const ContentModel = mongoose.model('contents', ContentSchema);
 const LinkModel = mongoose.model('links', LinkSchema);
 
-module.exports = {
+export {
     UserModel, TagModel, ContentModel, LinkModel
-}
+};
