@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 const Schema = mongoose.Schema;
 const ObjectId = Schema.Types.ObjectId;
 
-const contentTypes = ["image", "audio", "video", "article"];
+const contentTypes = ["image", "audio", "video", "article", "tweet", "document", "link", "other"];
 const roleBasedAccess = ["user", "admin"];
 
 const UserSchema = new Schema({
