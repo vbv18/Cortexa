@@ -12,9 +12,6 @@ const UserSchema = new Schema({
     role: { type: String, enum: roleBasedAccess, required: true }
 }, { timestamps: true })
 
-UserSchema.index({ email: 1 }, { unique: true });
-UserSchema.index({ username: 1 }, { unique: true });
-
 const TagSchema = new Schema({
     title: { type: String, required: true, unique: true }
 })
