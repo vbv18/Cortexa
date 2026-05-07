@@ -3,18 +3,10 @@ import { ENV } from "./config.js";
 import jwt from "jsonwebtoken";
 import { UserModel } from "./db.js";
 import type mongoose from "mongoose";
+import type { JWTPayload, AuthRequest } from "./types/auth.types.js";
 
 const app = express();
 app.use(express.json());
-
-interface JWTPayload {
-    id: string
-}
-
-interface AuthRequest extends express.Request {
-    user?: any,
-    admin?: any
-}
 
 export function createAuthMiddleware(
     Model: mongoose.Model<any>,
