@@ -1,5 +1,6 @@
 import dotenv from "dotenv";
 import { z } from "zod";
+import mongoose from "mongoose";
 
 dotenv.config();
 
@@ -25,3 +26,14 @@ export const ENV = {
     MONGODB_URL: parsedData.MONGODB_URL,
     SALT_ROUNDS: parseInt(parsedData.SALT_ROUNDS)
 };
+
+export async function connectToDB() {
+    try {
+        await mongoose.connect(parsedData.MONGODB_URL);
+        console.log('MongoDB connected.');
+    }
+    catch (err) {
+        console.log('############ error ############');
+        console.log(err);
+    }
+}

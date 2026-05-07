@@ -3,12 +3,17 @@ const Schema = mongoose.Schema;
 const ObjectId = Schema.Types.ObjectId;
 
 const contentTypes = ["image", "audio", "video", "article"];
+const roleBasedAccess = ["user", "admin"];
 
 const UserSchema = new Schema({
     username: { type: String, required: true, unique: true },
     email: { type: String, required: true, unique: true },
-    password: { type: String, required: true }
+    password: { type: String, required: true },
+    role: { type: String, enum: roleBasedAccess, required: true }
 }, { timestamps: true })
+
+UserSchema.index({ email: 1 }, { unique: true });
+UserSchema.index({ username: 1 }, { unique: true });
 
 const TagSchema = new Schema({
     title: { type: String, required: true, unique: true }
