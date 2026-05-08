@@ -1,16 +1,16 @@
 interface ButtonProps {
-    variant: 'primary' | 'secondary',
-    size: "sm" | "md" | "lg",
+    variant?: 'primary' | 'secondary',
+    size?: "sm" | "md" | "lg",
     text: string,
-    startIcon?: any,
-    endIcon?: any,
+    startIcon?: React.ReactNode,
+    endIcon?: React.ReactNode,
     disabled?: boolean,
     onClick: () => void
 }
 
 const variantStyles = {
-    primary: 'bg-blue-500 text-white hover:bg-blue-600',
-    secondary: 'bg-gray-500 text-white hover:bg-gray-600',
+    primary: 'bg-primary-btn-bg text-white',
+    secondary: 'bg-secondary-btn-bg text-secondary-btn-txt',
 }
 
 const sizeStyles = {
@@ -34,14 +34,19 @@ export const Button = ({
             onClick={onClick}
             disabled={disabled}
             className={`
-                flex items-center gap-2 rounded-md font-medium transition-all duration-300 transform hover:scale-102 shadow-xl
+                flex items-center gap-2 rounded-md font-medium transition-all duration-300
                 ${variantStyles[variant]}
                 ${sizeStyles[size]}
-                ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
+                ${disabled
+                    ? 'opacity-50 cursor-not-allowed'
+                    : 'cursor-pointer transform hover:scale-105 hover:shadow-xl active:scale-95'
+                }
             `}
         >
             {startIcon && <span>{startIcon}</span>}
+
             <span>{text}</span>
+
             {endIcon && <span>{endIcon}</span>}
         </button>
     )
