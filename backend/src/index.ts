@@ -6,6 +6,7 @@ import express from "express";
 import mongoose from "mongoose";
 import { UserModel, TagModel, ContentModel, LinkModel } from "./db.js";
 import { userAuthMiddleware } from "./auth.js";
+import crypto from "crypto";
 
 
 const app = express();
@@ -276,9 +277,78 @@ app.delete("/api/v1/content/:id", async (req: express.Request, res: express.Resp
     }
 });
 
-app.post("/api/v1/brain/share", async (req: express.Request, res: express.Response) => { });
+app.post("/api/v1/brain/share", async (req: express.Request, res: express.Response) => {
+    const share = req.body.share;
+    const userId = req.user._id;
 
-app.post("/api/v1/brain/:sharelink", async (req: express.Request, res: express.Response) => { });
+    if (typeof share !== "boolean") {
+        return res.status(411).json({
+            error: "Share field is required and must be a boolean."
+        });
+    }
+
+    try {
+        if (share) {
+            const existingLink = await LinkModel.findOne({ userId }).lean();
+
+            if (existingLink) {
+                return res.status(200).json({
+                    link: `/api/v1/brain/${existingLink.hash}`
+                })
+            }
+
+            const hash = crypto.randomBytes(10).toString("hex");
+
+            await LinkModel.create({
+                hash: hash,
+                userId: userId
+            })
+
+            return res.status(200).json({
+                link: `/api/v1/brain/${hash}`
+            });
+        } else {
+            await LinkModel.deleteOne({
+                userId: userId
+            });
+
+            return res.status(200).json({
+                message: "Share link removed."
+            });
+        }
+    } catch (err) {
+        return res.status(500).json({
+            error: "Something went wrong."
+        });
+    }
+});
+
+app.get("/api/v1/brain/:sharelink", async (req: express.Request, res: express.Response) => {
+    const hash = req.params.sharelink as string;
+
+    try {
+        const link = await LinkModel.findOne({ hash: hash }).lean();
+
+        if (!link) {
+            return res.status(404).json({
+                error: "Invalid share link."
+            });
+        }
+
+        const contents = await ContentModel.find({ userId: link.userId }).populate("tags").lean();
+
+        const user = await UserModel.findById(link.userId).lean();
+
+        return res.status(200).json({
+            username: user?.username,
+            contents: contents
+        });
+    } catch (err) {
+        return res.status(500).json({
+            error: "Something went wrong."
+        });
+    }
+});
 
 
 startServer();
