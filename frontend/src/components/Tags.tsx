@@ -1,11 +1,25 @@
-interface TagsProps {
-    tagTypes: string
+export interface TagType {
+    _id: string;
+    title: string;
 }
 
-const Tags = (props: TagsProps) => {
-    return <div className="px-3 py-1 text-lg bg-blue-100 rounded-2xl text-blue-500">
-        #{props.tagTypes}
-    </div>
+export interface TagsProps {
+    tagTypes: TagType[];
 }
 
-export default Tags;
+export const Tags = ({ tagTypes }: TagsProps) => {
+
+    return (
+        <div className="flex flex-wrap gap-2">
+            {tagTypes.map((tag) => (
+                <div
+                    key={tag._id}
+                    className="px-3 py-1text-sm bg-blue-100 rounded-2xl text-blue-500"
+                >
+                    #{tag.title}
+                </div>
+            ))}
+
+        </div>
+    )
+}
