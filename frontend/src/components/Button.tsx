@@ -1,11 +1,12 @@
 interface ButtonProps {
     variant?: 'primary' | 'secondary' | 'tetriary',
-    size?: "sm" | "md" | "lg",
+    size?: "sm" | "md" | "lg" | "xl",
     text?: string,
     startIcon?: React.ReactNode,
     endIcon?: React.ReactNode,
     disabled?: boolean,
-    onClick: () => void
+    onClick: () => void,
+    className?: string
 }
 
 const variantStyles = {
@@ -18,6 +19,7 @@ const sizeStyles = {
     sm: 'px-3 py-1 text-sm',
     md: 'px-4 py-2 text-base',
     lg: 'px-6 py-3 text-lg',
+    xl: 'px-6 py-3 w-full'
 }
 
 export const Button = ({
@@ -27,15 +29,18 @@ export const Button = ({
     startIcon,
     endIcon,
     disabled = false,
-    onClick
+    onClick,
+    className = ""
 }: ButtonProps) => {
 
     return (
         <button
+            type="button"
             onClick={onClick}
             disabled={disabled}
             className={`
-                flex items-center gap-2 rounded-md font-medium 
+                flex items-center justify-center gap-2 rounded-md font-medium 
+                ${className}
                 ${variantStyles[variant]}
                 ${sizeStyles[size]}
                 ${disabled
