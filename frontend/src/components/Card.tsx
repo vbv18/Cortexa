@@ -77,10 +77,6 @@ export function Card(props: CardProps) {
             <div
                 className="absolute bottom-3 left-6 text-sm text-gray-500"
             >
-                Created on:
-                <span className="font-medium ml-1">
-                    {date}
-                </span>
             </div>
         </div>
     );
