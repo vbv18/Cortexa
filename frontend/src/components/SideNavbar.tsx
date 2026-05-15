@@ -171,15 +171,11 @@ function Content({ props }: { props: SideNavbarProps }) {
             {/* Header */}
             <div className="flex items-center justify-end border-b px-5 py-4">
                 {isMobile && (
-                    <div
-                        className="h-10 w-10 rounded-xl hover:bg-gray-100 transition"
-                    >
-                        <Button
-                            startIcon={<BarIcon />}
-                            onClick={() => setIsOpen(false)}
-                            variant="tetriary"
-                        />
-                    </div>
+                    <Button
+                        startIcon={<BarIcon />}
+                        onClick={() => setIsOpen(false)}
+                        variant="tetriary"
+                    />
                 )}
             </div>
 
