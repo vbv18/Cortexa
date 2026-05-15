@@ -5,6 +5,7 @@ import { All } from "./icons/All";
 import { NotionIcon } from "./icons/NotionIcon";
 import { TwitterIcon } from "./icons/TwitterIcon";
 import { Button } from "./Button";
+import { CrossIcon } from "./icons/CrossIcon";
 
 type SideNavbarProps = {
     data1?: any,
@@ -172,7 +173,7 @@ function Content({ props }: { props: SideNavbarProps }) {
             <div className="flex items-center justify-end border-b px-5 py-4">
                 {isMobile && (
                     <Button
-                        startIcon={<BarIcon />}
+                        startIcon={<CrossIcon />}
                         onClick={() => setIsOpen(false)}
                         variant="tetriary"
                     />
