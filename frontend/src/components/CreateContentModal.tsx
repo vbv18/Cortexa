@@ -1,6 +1,7 @@
 import { CrossIcon } from "./icons/CrossIcon";
 import { Button } from "./Button";
 import { PlusIcon } from "./icons/PlusIcon";
+import { Input } from "./Input"
 
 
 type ModalProps = {
@@ -54,16 +55,5 @@ export function CreateContentModal({ open, onClose }: ModalProps) {
                 </div>
             </div>
         </div>
-    )
-}
-
-function Input({ placeholder }: { placeholder?: string }) {
-
-    return (
-        <input
-            placeholder={placeholder}
-            type={"text"}
-            className="w-full rounded-xl border px-4 py-3 outline-none transition focus:border-purple-500"
-        />
     )
 }
