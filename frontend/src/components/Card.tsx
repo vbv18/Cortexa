@@ -5,7 +5,6 @@ import { NotionIcon } from './icons/NotionIcon';
 import { YoutubeIcon } from './icons/YoutubeIcon';
 import { Button } from "./Button";
 import { Tags, type TagType } from "./Tags";
-import { format } from 'date-fns';
 
 interface CardProps {
     icon: "Youtube" | "Twitter" | "Notion" | "others";
@@ -22,7 +21,6 @@ interface ContentPreviewProps {
 
 
 export function Card(props: CardProps) {
-    const date = format(new Date(), 'dd MMM yyyy');
 
     return (
         <div
